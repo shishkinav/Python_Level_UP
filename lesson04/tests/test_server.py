@@ -1,4 +1,4 @@
-from lesson04.source_home_work.lesson03_python_advanced.server.__main__ import sendMessageClient, getMessageClient
+from lesson04.source_home_work import sendMessageClient, getMessageClient
 import unittest
 
 
