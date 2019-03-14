@@ -9,7 +9,7 @@ def sendMessageServer(msg):
         'text': msg_[1:]
     }
     sendMsg = json.dumps(sendMsg)
-    return sendMsg.encode(ENCODING)
+    return str(sendMsg).encode(ENCODING)
 
 def getMessageServer(response):
     return response.decode(ENCODING)
