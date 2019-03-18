@@ -1,5 +1,5 @@
 import pytest
-from .__main__ import getMessageServer, sendMessageServer
+from ..client.main import getMessageServer, sendMessageServer
 
 class TestClient:
     def setup(self):
