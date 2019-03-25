@@ -1,15 +1,12 @@
 import logging, os, sys
-
-
-path = '../log/'
-
+import inspect
 
 logname = 'client.log'
 logger = logging.getLogger(logname)
 
 _format = logging.Formatter('%(asctime)s - %(levelname)-10s - %(module)s - %(message)s')
 
-client_log = logging.FileHandler(os.path.join(path, logname), encoding='utf-8')
+client_log = logging.FileHandler(os.path.join(os.path.dirname(__file__), 'log/', logname), encoding='utf-8')
 client_log.setLevel(logging.INFO)
 client_log.setFormatter(_format)
 
@@ -24,5 +21,6 @@ logger.setLevel(logging.INFO)
 
 
 if __name__ == '__main__':
-    # logger.info('Тест записи по клиенту')
-    print(path)
+
+    print(inspect.stack())
+    print(inspect.stack()[2][3])
