@@ -1,16 +1,19 @@
 from socket import *
-from lesson03.config import *
+from lesson06.config import *
 import json
-from lesson05.log.server_log_config import logger
+from lesson06.LOG import Log
+from lesson06.server_log_config import logger
 
+
+@Log(logger)
 def sendMessageClient(msg):
-    logger.info(f'Отправка ответа клиенту {msg}')
     return msg.encode(ENCODING)
 
+
+@Log(logger)
 def getMessageClient(msg):
     try:
         msg_ = msg.decode(ENCODING)
-        logger.info(f'Исполнение функции getMessageClient с запросом клиента: {msg}')
         msg = json.loads(msg_)
         if msg['command'] == 'сервер':
             return 'туточки я'
@@ -28,6 +31,7 @@ def getMessageClient(msg):
     except:
         logger.error('Ошибка выполнения функции getMessageClient')
         logger.critical('Критическая ошибка выполнения функции getMessageClient')
+
 
 if __name__ == '__main__':
     tcp = socket(AF_INET, SOCK_STREAM)  # Создает сокет TCP
