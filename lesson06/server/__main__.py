@@ -3,6 +3,7 @@ from lesson06.config import *
 import json
 from lesson06.LOG import Log
 from lesson06.server_log_config import logger
+import select, time
 
 
 @Log(logger)
@@ -30,28 +31,50 @@ def getMessageClient(msg):
             return 'введите help чтобы получить справку по командам'
     except:
         logger.error('Ошибка выполнения функции getMessageClient')
-        logger.critical('Критическая ошибка выполнения функции getMessageClient')
+
+
+def listen_socket(address):
+    '''
+    функция прослушки порта
+    '''
+    tcp = socket(AF_INET, SOCK_STREAM)
+    tcp.bind(address)
+    tcp.listen(5)
+    tcp.settimeout(0.2)
+    return tcp
+
+
+def mainloop():
+    '''
+    Основной цикл обработки запросов
+    '''
+    address = (SERVER_ADDR, SERVER_PORT)
+    clients = []
+    tcp = listen_socket(address)
+    while True:
+        try:
+            conn, addr = tcp.accept()
+        except OSError as e:
+            pass
+        else:
+            logger.info(f'Получен запрос на соединение с {str(addr)}')
+            clients.append(conn)
+        finally:
+            w = []
+            try:
+                r, w, e = select.select([], clients, [], 0)
+            except Exception as e:
+                pass
+            for s_client in w:
+                timestr = time.ctime(time.time()) + '\n'
+                try:
+                    s_client.send(sendMessageClient(timestr))
+                except:
+                    logger.info(f'Клиент {str(s_client)} отключился и был удален.')
+                    clients.remove(s_client)
 
 
 if __name__ == '__main__':
-    tcp = socket(AF_INET, SOCK_STREAM)  # Создает сокет TCP
-    tcp.bind(('', SERVER_PORT))                # Присваивает порт 7777
-    tcp.listen(5)                       # Переходит в режим ожидания запросов;
-                                      # одновременно обслуживает не более
-                                      # 5 запросов.
-    while True:
-        try:
-            client, addr = tcp.accept()
-            if client:
-                logger.info(f'Соединение с {addr[0]} - {addr[1]} установлено')
-                logger.debug(f'Соединение с {addr[0]} - {addr[1]} установлено')
-                logger.warning(f'Соединение с {addr[0]} - {addr[1]} установлено')
 
-
-            result = getMessageClient(client.recv(1024))
-            client.send(sendMessageClient(result))
-            client.close()
-        except:
-            logger.critical('Критическая ошибка исполнения программы')
-            client.send(sendMessageClient('Ошибка на стороне сервера'))
-            client.close()
+    print('Сервер запущен')
+    mainloop()
