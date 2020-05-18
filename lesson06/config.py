@@ -1,0 +1,5 @@
+ENCODING = 'UTF-8'
+
+SERVER_PORT = 7777
+
+SERVER_ADDR = 'localhost'
